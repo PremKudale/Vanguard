@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanguard PE - Private Equity Portfolio Intelligence & Due Diligence Platform</title>
+    <meta name="description" content="Institutional-grade PE analysis platform with LBO modeling, value creation bridge, due diligence scorecards, and automated investment committee memos.">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/charts.css">
+    <link rel="stylesheet" href="css/memo.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- SIDEBAR - Deal Parameters                    -->
+<!-- ═══════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <div class="sidebar-logo">V</div>
+            <h2>Assumptions</h2>
+        </div>
+        <button class="sidebar-close" id="sidebar-close" title="Close sidebar">✕</button>
+    </div>
+
+    <div class="sidebar-content">
+
+        <!-- Deal Parameters -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header">
+                <h3><span class="section-icon">🎯</span> Deal Parameters</h3>
+                <span class="collapse-icon">▾</span>
+            </div>
+            <div class="sidebar-section-body">
+                <div class="input-group">
+                    <label>Target Company</label>
+                    <input type="text" id="inp-target-name" value="Atlas Consumer Products">
+                </div>
+                <div class="input-group">
+                    <label>Industry</label>
+                    <select id="inp-industry">
+                        <option value="consumer" selected>Consumer Products</option>
+                        <option value="retail">Retail & Hospitality</option>
+                        <option value="healthcare">Healthcare & Pharma</option>
+                        <option value="industrials">Industrials & Manufacturing</option>
+                        <option value="chemicals">Chemicals & Materials</option>
+                        <option value="automotive">Automotive & Mobility</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>LTM Revenue (₹ Cr)</label>
+                        <input type="number" id="inp-ltm-revenue" value="1200" step="50">
+                    </div>
+                    <div class="input-group">
+                        <label>LTM EBITDA (₹ Cr)</label>
+                        <input type="number" id="inp-ltm-ebitda" value="180" step="10">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Entry EV/EBITDA</label>
+                        <input type="number" id="inp-entry-multiple" value="8.0" step="0.5" min="3" max="25">
+                    </div>
+                    <div class="input-group">
+                        <label>Exit EV/EBITDA</label>
+                        <input type="number" id="inp-exit-multiple" value="9.0" step="0.5" min="3" max="25">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Capital Structure -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header">
+                <h3><span class="section-icon">🏦</span> Capital Structure</h3>
+                <span class="collapse-icon">▾</span>
+            </div>
+            <div class="sidebar-section-body">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Debt / Total (%)</label>
+                        <input type="number" id="inp-debt-ratio" value="60" step="5" min="0" max="90">
+                    </div>
+                    <div class="input-group">
+                        <label>Senior Rate (%)</label>
+                        <input type="number" id="inp-senior-rate" value="10.0" step="0.25" min="4" max="18">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Loan Tenor (yrs)</label>
+                        <input type="number" id="inp-loan-tenor" value="6" step="1" min="3" max="10">
+                    </div>
+                    <div class="input-group">
+                        <label>Cash Sweep (%)</label>
+                        <input type="number" id="inp-cash-sweep" value="50" step="5" min="0" max="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Operating Assumptions -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header">
+                <h3><span class="section-icon">📈</span> Operating Assumptions</h3>
+                <span class="collapse-icon">▾</span>
+            </div>
+            <div class="sidebar-section-body">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Revenue CAGR (%)</label>
+                        <input type="number" id="inp-revenue-cagr" value="8.0" step="0.5" min="0" max="30">
+                    </div>
+                    <div class="input-group">
+                        <label>Target EBITDA Margin (%)</label>
+                        <input type="number" id="inp-target-margin" value="20.0" step="0.5" min="5" max="50">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>COGS (%)</label>
+                        <input type="number" id="inp-cogs-pct" value="55" step="1" min="20" max="85">
+                    </div>
+                    <div class="input-group">
+                        <label>SG&A (%)</label>
+                        <input type="number" id="inp-sga-pct" value="18" step="0.5" min="5" max="40">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>D&A (% Rev)</label>
+                        <input type="number" id="inp-dna-pct" value="3.0" step="0.5" min="0.5" max="15">
+                    </div>
+                    <div class="input-group">
+                        <label>CapEx (% Rev)</label>
+                        <input type="number" id="inp-capex-pct" value="3.5" step="0.5" min="0.5" max="15">
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>NWC Days</label>
+                        <input type="number" id="inp-nwc-days" value="35" step="5" min="10" max="120">
+                    </div>
+                    <div class="input-group">
+                        <label>Hold Period (yrs)</label>
+                        <input type="number" id="inp-hold-period" value="5" step="1" min="3" max="10">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Tax & Fees -->
+        <div class="sidebar-section collapsed">
+            <div class="sidebar-section-header">
+                <h3><span class="section-icon">📋</span> Tax & Fees</h3>
+                <span class="collapse-icon">▾</span>
+            </div>
+            <div class="sidebar-section-body">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>Tax Rate (%)</label>
+                        <input type="number" id="inp-tax-rate" value="25.2" step="0.5" min="10" max="40">
+                    </div>
+                    <div class="input-group">
+                        <label>Txn Fees (% EV)</label>
+                        <input type="number" id="inp-txn-fees" value="2.0" step="0.5" min="0" max="5">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Financing Fees (% Debt)</label>
+                    <input type="number" id="inp-fin-fees" value="1.5" step="0.5" min="0" max="5">
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <!-- Value Creation Levers -->
+        <div class="sidebar-section collapsed">
+            <div class="sidebar-section-header">
+                <h3><span class="section-icon">🎚️</span> Value Creation Levers</h3>
+                <span class="collapse-icon">▾</span>
+            </div>
+            <div class="sidebar-section-body">
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Pricing Uplift</span>
+                        <span class="slider-value" id="inp-pricing-uplift-val">2.0%</span>
+                    </div>
+                    <input type="range" id="inp-pricing-uplift" min="0" max="10" step="0.5" value="2.0">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">Procurement Savings</span>
+                        <span class="slider-value" id="inp-procurement-savings-val">3.0%</span>
+                    </div>
+                    <input type="range" id="inp-procurement-savings" min="0" max="15" step="0.5" value="3.0">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">SG&A Reduction</span>
+                        <span class="slider-value" id="inp-sga-reduction-val">5.0%</span>
+                    </div>
+                    <input type="range" id="inp-sga-reduction" min="0" max="20" step="0.5" value="5.0">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <span class="slider-label">NWC Improvement</span>
+                        <span class="slider-value" id="inp-nwc-improvement-val">10.0%</span>
+                    </div>
+                    <input type="range" id="inp-nwc-improvement" min="0" max="30" step="1" value="10">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="sidebar-footer">
+        <button class="btn" id="btn-reset">↺ Reset to Defaults</button>
+    </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- MAIN CONTENT                                -->
+<!-- ═══════════════════════════════════════════ -->
+<main class="main-content" id="main-content">
+
+    <!-- Top Header -->
+    <div class="top-header">
+        <div class="top-header-left">
+            <button class="sidebar-toggle-btn" id="sidebar-toggle" title="Toggle assumptions panel">☰</button>
+            <div class="app-title">
+                <h1>Vanguard PE</h1>
+                <span class="deal-name" id="deal-name">- Atlas Consumer Products</span>
+            </div>
+        </div>
+        <div class="top-header-right">
+            <button class="btn btn-sm" id="btn-export-csv">📥 Export CSV</button>
+            <button class="btn btn-sm btn-primary" id="btn-print-memo">🖨️ Print Memo</button>
+        </div>
+    </div>
+
+    <!-- KPI Bar -->
+    <div class="kpi-bar">
+        <div class="kpi-card">
+            <span class="kpi-label">Entry EV</span>
+            <span class="kpi-value" id="kpi-ev">—</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Equity Check</span>
+            <span class="kpi-value" id="kpi-equity">—</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Equity IRR</span>
+            <span class="kpi-value" id="kpi-irr">—</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">MOIC</span>
+            <span class="kpi-value" id="kpi-moic">—</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Entry Leverage</span>
+            <span class="kpi-value" id="kpi-leverage">—</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">DD Score</span>
+            <span class="kpi-value" id="kpi-dd">—</span>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="deal-overview"><span class="tab-icon">📊</span>Deal Overview</button>
+        <button class="tab-btn" data-tab="lbo-model"><span class="tab-icon">🏗️</span>LBO Model</button>
+        <button class="tab-btn" data-tab="value-creation"><span class="tab-icon">🎯</span>Value Creation</button>
+        <button class="tab-btn" data-tab="due-diligence"><span class="tab-icon">🔍</span>Due Diligence</button>
+        <button class="tab-btn" data-tab="comps"><span class="tab-icon">📈</span>Comps & Valuation</button>
+        <button class="tab-btn" data-tab="scenarios"><span class="tab-icon">⚡</span>Scenarios</button>
+        <button class="tab-btn" data-tab="memo"><span class="tab-icon">📝</span>Investment Memo</button>
+    </nav>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+
+        <!-- ═══ TAB 1: DEAL OVERVIEW ═══ -->
+        <div class="tab-panel active" id="deal-overview">
+            <div class="section-header">
+                <h2>📊 Deal Overview</h2>
+                <span class="badge badge-blue section-badge">Real-time</span>
+            </div>
+
+            <div class="grid-4 stagger-children" style="margin-bottom: 24px;">
+                <div class="metric-card">
+                    <span class="metric-label">Entry EV</span>
+                    <span class="metric-value" id="ov-entry-ev">—</span>
+                    <span class="metric-sub" id="ov-entry-ev-sub"></span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Exit EV</span>
+                    <span class="metric-value" id="ov-exit-ev">—</span>
+                    <span class="metric-sub" id="ov-exit-ev-sub"></span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Equity IRR</span>
+                    <span class="metric-value positive" id="ov-equity-irr">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">MOIC</span>
+                    <span class="metric-value" id="ov-moic">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Equity Check</span>
+                    <span class="metric-value" id="ov-equity-check">—</span>
+                    <span class="metric-sub" id="ov-equity-check-sub"></span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Total Debt</span>
+                    <span class="metric-value" id="ov-total-debt">—</span>
+                    <span class="metric-sub" id="ov-total-debt-sub"></span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Equity at Exit</span>
+                    <span class="metric-value positive" id="ov-exit-equity">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Total Return</span>
+                    <span class="metric-value positive" id="ov-total-return">—</span>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="chart-container">
+                    <div class="chart-title">Revenue & EBITDA Trajectory</div>
+                    <div class="chart-wrapper"><canvas id="chart-operating-trend"></canvas></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">EBITDA Margin Expansion</div>
+                    <div class="chart-wrapper"><canvas id="chart-margin-trend"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB 2: LBO MODEL ═══ -->
+        <div class="tab-panel" id="lbo-model">
+            <div class="section-header">
+                <h2>🏗️ LBO Model</h2>
+                <span class="badge badge-purple section-badge">Full Model</span>
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 24px;">
+                <!-- Sources & Uses -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><span class="card-icon">💰</span> Sources & Uses</h3>
+                        <span class="badge badge-blue">₹ Crores</span>
+                    </div>
+                    <div class="card-body" id="sources-uses-content">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <div class="chart-container">
+                        <div class="chart-title">Debt Service Profile</div>
+                        <div class="chart-wrapper short"><canvas id="chart-debt-schedule"></canvas></div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">Leverage Trajectory (Net Debt / EBITDA)</div>
+                        <div class="chart-wrapper short"><canvas id="chart-leverage"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operating Model Table -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h3><span class="card-icon">📊</span> Operating Model: 5-Year Projections</h3>
+                    <span class="badge badge-blue">₹ Crores</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table" id="operating-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>LTM</th>
+                                <th>Year 1</th>
+                                <th>Year 2</th>
+                                <th>Year 3</th>
+                                <th>Year 4</th>
+                                <th>Year 5</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operating-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Debt Schedule Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="card-icon">🏦</span> Debt Schedule</h3>
+                    <span class="badge badge-amber">₹ Crores</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table" id="debt-table">
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Opening</th>
+                                <th>Interest</th>
+                                <th>Amort</th>
+                                <th>Sweep</th>
+                                <th>Closing</th>
+                                <th>Leverage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="debt-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB 3: VALUE CREATION ═══ -->
+        <div class="tab-panel" id="value-creation">
+            <div class="section-header">
+                <h2>🎯 Value Creation Bridge</h2>
+                <span class="badge badge-emerald section-badge">Analysis</span>
+            </div>
+
+            <!-- Waterfall Chart -->
+            <div class="chart-container" style="margin-bottom: 24px;">
+                <div class="chart-title">Equity Value Bridge: Entry to Exit</div>
+                <div class="chart-subtitle">Decomposition of total equity value creation over hold period</div>
+                <div class="chart-wrapper tall"><canvas id="chart-waterfall"></canvas></div>
+            </div>
+
+            <!-- Bridge Components -->
+            <div class="grid-4" style="margin-bottom: 24px;">
+                <div class="metric-card">
+                    <span class="metric-label">Revenue Growth</span>
+                    <span class="metric-value positive" id="vc-rev-growth">—</span>
+                    <span class="metric-sub" id="vc-rev-growth-pct"></span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Margin Expansion</span>
+                    <span class="metric-value positive" id="vc-margin-exp">—</span>
+                    <span class="metric-sub" id="vc-margin-exp-pct"></span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Multiple Expansion</span>
+                    <span class="metric-value positive" id="vc-multiple-exp">—</span>
+                    <span class="metric-sub" id="vc-multiple-exp-pct"></span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Deleveraging</span>
+                    <span class="metric-value positive" id="vc-deleveraging">—</span>
+                    <span class="metric-sub" id="vc-deleveraging-pct"></span>
+                </div>
+            </div>
+
+            <!-- Before / After -->
+            <div class="section-header"><h2>📊 Key Operational Metrics: Before vs After</h2></div>
+            <div class="grid-2" style="margin-bottom: 24px;">
+                <div class="card">
+                    <div class="card-header"><h3>Revenue</h3></div>
+                    <div class="before-after">
+                        <div class="ba-card ba-before"><div class="ba-label">Entry</div><div class="ba-value" id="vc-entry-rev">—</div></div>
+                        <div class="ba-arrow">→</div>
+                        <div class="ba-card ba-after"><div class="ba-label">Exit</div><div class="ba-value" id="vc-exit-rev">—</div></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>EBITDA Margin</h3></div>
+                    <div class="before-after">
+                        <div class="ba-card ba-before"><div class="ba-label">Entry</div><div class="ba-value" id="vc-entry-margin">—</div></div>
+                        <div class="ba-arrow">→</div>
+                        <div class="ba-card ba-after"><div class="ba-label">Exit</div><div class="ba-value" id="vc-exit-margin">—</div></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>EBITDA</h3></div>
+                    <div class="before-after">
+                        <div class="ba-card ba-before"><div class="ba-label">Entry</div><div class="ba-value" id="vc-entry-ebitda">—</div></div>
+                        <div class="ba-arrow">→</div>
+                        <div class="ba-card ba-after"><div class="ba-label">Exit</div><div class="ba-value" id="vc-exit-ebitda">—</div></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>Leverage</h3></div>
+                    <div class="before-after">
+                        <div class="ba-card ba-before"><div class="ba-label">Entry</div><div class="ba-value" id="vc-entry-leverage">—</div></div>
+                        <div class="ba-arrow">→</div>
+                        <div class="ba-card ba-after"><div class="ba-label">Exit</div><div class="ba-value" id="vc-exit-leverage">—</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Improvement Levers -->
+            <div class="section-header"><h2>🎚️ Improvement Lever Impact (Annual EBITDA Uplift)</h2></div>
+            <div class="lever-grid">
+                <div class="lever-card">
+                    <div class="lever-title">💲 Pricing Optimization</div>
+                    <div class="lever-impact" id="lever-pricing">—</div>
+                </div>
+                <div class="lever-card">
+                    <div class="lever-title">📦 Procurement Savings</div>
+                    <div class="lever-impact" id="lever-procurement">—</div>
+                </div>
+                <div class="lever-card">
+                    <div class="lever-title">✂️ SG&A Rationalization</div>
+                    <div class="lever-impact" id="lever-sga">—</div>
+                </div>
+                <div class="lever-card">
+                    <div class="lever-title">🔄 Working Capital</div>
+                    <div class="lever-impact" id="lever-nwc">—</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB 4: DUE DILIGENCE ═══ -->
+        <div class="tab-panel" id="due-diligence">
+            <div class="section-header">
+                <h2>🔍 Due Diligence Scorecard</h2>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="badge badge-blue section-badge">Click dots to adjust scores</span>
+                </div>
+            </div>
+
+            <!-- Overall Score & Recommendation -->
+            <div class="grid-2" style="margin-bottom: 24px;">
+                <div class="card" style="text-align:center;">
+                    <div class="card-header"><h3>Overall DD Score</h3></div>
+                    <div style="font-family:var(--font-mono);font-size:3rem;font-weight:800;" id="dd-overall-score">—</div>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <div class="card-header"><h3>Recommendation</h3></div>
+                    <div style="padding:10px 0;">
+                        <div class="recommendation-badge" id="dd-recommendation">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DD Cards Grid + Radar -->
+            <div class="grid-2" style="margin-bottom: 24px;">
+                <div class="dd-grid" id="dd-grid" style="grid-column:1;">
+                    <!-- Rendered by JS -->
+                </div>
+                <div style="display:flex;flex-direction:column;gap:16px;">
+                    <div class="chart-container">
+                        <div class="chart-title">Risk Heat Map</div>
+                        <div class="chart-wrapper tall"><canvas id="chart-radar"></canvas></div>
+                    </div>
+                    <!-- Risk Flags -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><span class="card-icon">🚩</span> Risk Flags</h3>
+                        </div>
+                        <ul class="flag-list" id="dd-flags">
+                            <!-- Rendered by JS -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB 5: COMPS & VALUATION ═══ -->
+        <div class="tab-panel" id="comps">
+            <div class="section-header">
+                <h2>📈 Comparable Company Analysis</h2>
+                <span class="badge badge-purple section-badge">Valuation</span>
+            </div>
+
+            <!-- Comps Table -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h3><span class="card-icon">📊</span> Trading Comparables</h3>
+                </div>
+                <div class="comps-table-wrapper">
+                    <table class="comps-table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Revenue (Cr)</th>
+                                <th>EBITDA (Cr)</th>
+                                <th>Margin</th>
+                                <th>Growth</th>
+                                <th>EV/EBITDA</th>
+                                <th>EV/Rev</th>
+                                <th>P/E</th>
+                                <th>Leverage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comps-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Implied Valuation -->
+            <div class="grid-3" style="margin-bottom: 24px;">
+                <div class="metric-card">
+                    <span class="metric-label">Implied EV (Low)</span>
+                    <span class="metric-value" id="comps-implied-low">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Implied EV (Median)</span>
+                    <span class="metric-value info" id="comps-implied-mid">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Implied EV (High)</span>
+                    <span class="metric-value" id="comps-implied-high">—</span>
+                </div>
+            </div>
+
+            <!-- Precedent Transactions -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h3><span class="card-icon">🤝</span> Precedent Transactions</h3>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Target</th>
+                                <th>Acquirer</th>
+                                <th>Year</th>
+                                <th>Deal Size</th>
+                                <th>EV/EBITDA</th>
+                                <th>EV/Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody id="precedent-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Football Field -->
+            <div class="chart-container">
+                <div class="chart-title">Football Field Valuation — Enterprise Value Range (₹ Cr)</div>
+                <div class="chart-subtitle">Implied valuation from multiple methodologies</div>
+                <div class="chart-wrapper"><canvas id="chart-football"></canvas></div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB 6: SCENARIOS & SENSITIVITY ═══ -->
+        <div class="tab-panel" id="scenarios">
+            <div class="section-header">
+                <h2>⚡ Scenario & Sensitivity Analysis</h2>
+                <span class="badge badge-amber section-badge">Risk</span>
+            </div>
+
+            <!-- Scenario Cards -->
+            <div class="grid-3" id="scenario-grid" style="margin-bottom: 24px;">
+                <!-- Rendered by JS -->
+            </div>
+
+            <!-- Probability Weighted -->
+            <div class="grid-2" style="margin-bottom: 24px;">
+                <div class="metric-card">
+                    <span class="metric-label">Prob-Weighted IRR</span>
+                    <span class="metric-value" id="weighted-irr">—</span>
+                    <span class="metric-sub">30% Mgmt / 50% Base / 20% Downside</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Prob-Weighted MOIC</span>
+                    <span class="metric-value" id="weighted-moic">—</span>
+                </div>
+            </div>
+
+            <!-- Tornado Chart -->
+            <div class="chart-container" style="margin-bottom: 24px;">
+                <div class="chart-title">Tornado Sensitivity — Impact on Equity IRR</div>
+                <div class="chart-subtitle">Each variable tested at ±range from base case</div>
+                <div class="chart-wrapper tall"><canvas id="chart-tornado"></canvas></div>
+            </div>
+
+            <!-- 2-Way Sensitivity Table -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <h3><span class="card-icon">📊</span> Two-Way Sensitivity: Exit Multiple x Revenue CAGR</h3>
+                </div>
+                <div class="table-wrapper" id="two-way-table">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Breakeven Analysis -->
+            <div class="section-header"><h2>📏 Breakeven Analysis (20% Hurdle Rate)</h2></div>
+            <div class="grid-4">
+                <div class="metric-card">
+                    <span class="metric-label">Breakeven CAGR</span>
+                    <span class="metric-value" id="breakeven-cagr">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">CAGR Cushion</span>
+                    <span class="metric-value positive" id="breakeven-cagr-cushion">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Breakeven Multiple</span>
+                    <span class="metric-value" id="breakeven-multiple">—</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Multiple Cushion</span>
+                    <span class="metric-value positive" id="breakeven-mult-cushion">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TAB 7: INVESTMENT MEMO ═══ -->
+        <div class="tab-panel" id="memo">
+            <div class="memo-actions">
+                <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+                <button class="btn" id="btn-export-csv-2">📥 Export Data (CSV)</button>
+            </div>
+            <div class="memo-container">
+                <div class="memo-content" id="memo-content">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end tab-content -->
+</main>
+
+<!-- Application Script (ES Module) -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>
